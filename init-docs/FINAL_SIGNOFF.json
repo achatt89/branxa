@@ -1,0 +1,37 @@
+{
+  "version": "1.0",
+  "date": "2026-02-19",
+  "status": "NO-GO",
+  "summary": {
+    "criticalChecks": {
+      "passed": 0,
+      "total": 0
+    },
+    "nonCriticalChecks": {
+      "passed": 0,
+      "total": 0
+    },
+    "frCoverage": {
+      "frWithPassingTests": 0,
+      "frTotal": 0
+    }
+  },
+  "interfaces": {
+    "cli": "UNKNOWN",
+    "mcp": "UNKNOWN",
+    "vscodeExtension": "UNKNOWN"
+  },
+  "quality": {
+    "parserParity": "UNKNOWN",
+    "aiCommandParity": "UNKNOWN",
+    "persistenceIntegrity": "UNKNOWN"
+  },
+  "blockers": [],
+  "waivers": [],
+  "evidence": {
+    "executionLog": "EXECUTION_LOG.md",
+    "testEvidence": "TEST_EVIDENCE.md",
+    "parityAuditResult": "PARITY_AUDIT_RESULT.md"
+  },
+  "decisionRationale": "Populate after parity gate execution."
+}

@@ -1,0 +1,166 @@
+{
+  "manifestVersion": "1.0",
+  "generatedDate": "2026-02-19",
+  "project": {
+    "name": "Branxa Persistent Context System",
+    "runtime": {
+      "language": "TypeScript/Node.js",
+      "moduleType": "commonjs",
+      "buildTooling": "tsc"
+    }
+  },
+  "architecture": {
+    "style": "CLI-first local tool with MCP and VS Code adapters",
+    "coreLayers": [
+      "command layer",
+      "context persistence layer",
+      "git introspection layer",
+      "AI integration layer",
+      "session parser layer",
+      "adapter layer (MCP, VS Code)"
+    ]
+  },
+  "interfaceContracts": {
+    "canonicalManifest": "CANONICAL_INTERFACE_MANIFEST.md",
+    "cli": {
+      "binaryNames": [
+        "branxa",
+        "branxa-mcp"
+      ],
+      "commands": [
+        "init",
+        "save",
+        "resume",
+        "log",
+        "diff",
+        "handoff",
+        "share",
+        "watch",
+        "hook",
+        "summarize",
+        "suggest",
+        "compress",
+        "config"
+      ]
+    },
+    "mcp": {
+      "transport": "stdio",
+      "tools": [
+        "branxa_resume",
+        "branxa_save",
+        "branxa_log"
+      ],
+      "resources": [
+        "branxa://context"
+      ]
+    },
+    "vscode": {
+      "activation": "onStartupFinished",
+      "commands": [
+        "branxa.save",
+        "branxa.resume",
+        "branxa.log",
+        "branxa.diff"
+      ]
+    }
+  },
+  "dataModel": {
+    "storageRoot": ".branxa",
+    "paths": [
+      ".branxa/config.json",
+      ".branxa/sessions/*.json",
+      ".branxa/branches/*.json"
+    ],
+    "contextEntryFields": [
+      "id",
+      "timestamp",
+      "branch",
+      "repo",
+      "author",
+      "task",
+      "goal",
+      "approaches",
+      "decisions",
+      "currentState",
+      "nextSteps",
+      "blockers",
+      "filesChanged",
+      "filesStaged",
+      "recentCommits",
+      "assignee",
+      "handoffNote"
+    ],
+    "mergeBehavior": {
+      "dedupeKey": "id",
+      "winnerRule": "latest timestamp",
+      "sortOrder": "ascending timestamp"
+    }
+  },
+  "parserPipeline": {
+    "sourcePriority": [
+      "claude-code",
+      "antigravity",
+      "cursor"
+    ],
+    "currentLimitations": [
+      "Cursor SQLite parsing is intentionally skipped"
+    ]
+  },
+  "aiIntegration": {
+    "providerInterface": "OpenAI-compatible /chat/completions",
+    "defaultConfig": {
+      "aiProvider": "https://api.openai.com/v1",
+      "aiModel": "gpt-4o-mini"
+    },
+    "envOverrides": [
+      "BRANXA_AI_KEY",
+      "BRANXA_AI_PROVIDER",
+      "BRANXA_AI_MODEL"
+    ],
+    "commandsUsingAI": [
+      "summarize",
+      "suggest",
+      "compress"
+    ]
+  },
+  "configurationContract": {
+    "userConfigKeys": [
+      "defaultOutput",
+      "autoGitCapture",
+      "recentCommitCount",
+      "defaultLogCount",
+      "watchInterval",
+      "autoHook",
+      "aiProvider",
+      "aiModel",
+      "aiApiKey"
+    ],
+    "validationRules": [
+      "config set only allows known keys",
+      "numeric-like values are coerced where applicable",
+      "aiApiKey masked in list output"
+    ]
+  },
+  "testingStrategy": {
+    "framework": "jest with ts-jest",
+    "testMatch": "**/*.test.ts",
+    "prioritySuites": [
+      "parser extraction behavior",
+      "command contract tests",
+      "context persistence tests",
+      "MCP tool contract tests",
+      "VS Code extension command integration tests"
+    ]
+  },
+  "replicationConstraints": {
+    "must": [
+      "match command and adapter behavior",
+      "preserve data model and persistence semantics",
+      "provide parity acceptance tests"
+    ],
+    "mustNot": [
+      "copy source text from reference implementation",
+      "invent unsupported interfaces"
+    ]
+  }
+}

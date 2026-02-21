@@ -12,7 +12,9 @@
     "build": "tsc -p tsconfig.json",
     "test": "jest --runInBand",
     "dev": "tsx src/index.ts",
-    "mcp": "tsx src/mcp/index.ts"
+    "mcp": "tsx src/mcp/index.ts",
+    "docs:build": "npx honkit@5.1.4 build docs docs-site",
+    "docs:serve": "npx honkit@5.1.4 serve docs"
   },
   "engines": {
     "node": ">=20"

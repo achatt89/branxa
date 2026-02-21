@@ -1,0 +1,25 @@
+# Summary
+
+- [Branxa Developer Docs](README.md)
+- [Getting Started](getting-started.md)
+- [Architecture](architecture.md)
+- [CLI]
+  - [Overview](cli/overview.md)
+  - [init](cli/init.md)
+  - [save](cli/save.md)
+  - [resume](cli/resume.md)
+  - [log and diff](cli/log-diff.md)
+  - [handoff and share](cli/collaboration.md)
+  - [watch and hook](cli/automation.md)
+  - [summarize, suggest, compress](cli/ai.md)
+  - [config](cli/config.md)
+- [Adapters]
+  - [MCP](adapters/mcp.md)
+  - [VS Code Bridge](adapters/vscode.md)
+- [Internals]
+  - [Data Model and Storage](internals/data-model.md)
+  - [Parser Pipeline](internals/parser-pipeline.md)
+  - [AI Integration](internals/ai-integration.md)
+  - [Testing and Release Gate](internals/testing-release.md)
+- [Contributing](contributing.md)
+- [GitHub Pages Deployment](deployment-github-pages.md)

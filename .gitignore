@@ -7,3 +7,6 @@ coverage/
 
 # Branxa (managed)
 .branxa/
+
+# Docs build output
+docs-site/

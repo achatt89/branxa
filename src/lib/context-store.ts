@@ -57,6 +57,10 @@ export async function readBranchEntries(cwd: string, branch: string): Promise<Co
       return [];
     }
 
+    if (nodeError.name === 'SyntaxError') {
+      return [];
+    }
+
     throw error;
   }
 }
@@ -73,10 +77,65 @@ export async function appendBranchEntry(cwd: string, entry: ContextEntry): Promi
   await writeBranchEntries(cwd, entry.branch, entries);
 }
 
+export async function mergeBranchEntries(cwd: string, branch: string, incoming: ContextEntry[]): Promise<ContextEntry[]> {
+  const existing = await readBranchEntries(cwd, branch);
+  const merged = mergeAndSortEntries(existing, incoming);
+  await writeBranchEntries(cwd, branch, merged);
+  return merged;
+}
+
+export function mergeAndSortEntries(existing: ContextEntry[], incoming: ContextEntry[]): ContextEntry[] {
+  const byId = new Map<string, ContextEntry>();
+
+  for (const entry of [...existing, ...incoming]) {
+    const current = byId.get(entry.id);
+    if (!current) {
+      byId.set(entry.id, entry);
+      continue;
+    }
+
+    if (entry.timestamp.localeCompare(current.timestamp) > 0) {
+      byId.set(entry.id, entry);
+    }
+  }
+
+  return [...byId.values()].sort((a, b) => a.timestamp.localeCompare(b.timestamp));
+}
+
 export async function saveSessionEntry(cwd: string, entry: ContextEntry): Promise<void> {
   const sessionPath = path.join(cwd, BRANXA_SESSIONS_DIR, `${entry.id}.json`);
   await fs.mkdir(path.dirname(sessionPath), { recursive: true });
   await fs.writeFile(sessionPath, `${JSON.stringify(entry, null, 2)}\n`, 'utf8');
+}
+
+export async function readSessionEntries(cwd: string): Promise<ContextEntry[]> {
+  const sessionsPath = path.join(cwd, BRANXA_SESSIONS_DIR);
+
+  try {
+    const files = await fs.readdir(sessionsPath);
+    const entries = await Promise.all(
+      files
+        .filter((file) => file.endsWith('.json'))
+        .map(async (file) => {
+          try {
+            const raw = await fs.readFile(path.join(sessionsPath, file), 'utf8');
+            const parsed = JSON.parse(raw) as ContextEntry;
+            return parsed;
+          } catch {
+            return null;
+          }
+        })
+    );
+
+    return entries.filter((entry): entry is ContextEntry => Boolean(entry));
+  } catch (error) {
+    const nodeError = error as NodeJS.ErrnoException;
+    if (nodeError.code === 'ENOENT') {
+      return [];
+    }
+
+    throw error;
+  }
 }
 
 export async function readAllBranchEntries(cwd: string): Promise<ContextEntry[]> {

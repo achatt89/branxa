@@ -1,6 +1,8 @@
 import { Command } from 'commander';
 
 import { createDiffCommand } from './commands/diff';
+import { createCompressCommand } from './commands/compress';
+import { createConfigCommand } from './commands/config';
 import { createHandoffCommand } from './commands/handoff';
 import { createHookCommand } from './commands/hook';
 import { createInitCommand } from './commands/init';
@@ -8,7 +10,8 @@ import { createLogCommand } from './commands/log';
 import { createResumeCommand } from './commands/resume';
 import { createSaveCommand } from './commands/save';
 import { createShareCommand } from './commands/share';
-import { createStubCommand } from './commands/stub';
+import { createSuggestCommand } from './commands/suggest';
+import { createSummarizeCommand } from './commands/summarize';
 import { createWatchCommand } from './commands/watch';
 
 export interface ProgramDependencies {
@@ -33,18 +36,10 @@ export function createProgram(deps: ProgramDependencies = {}): Command {
   program.addCommand(createShareCommand(resolveCwd));
   program.addCommand(createWatchCommand(resolveCwd));
   program.addCommand(createHookCommand(resolveCwd));
-  program.addCommand(createStubCommand({ name: 'summarize', description: 'Summarize repository activity with AI' }));
-  program.addCommand(createStubCommand({ name: 'suggest', description: 'Suggest next steps with AI' }));
-  program.addCommand(createStubCommand({ name: 'compress', description: 'Compress branch context history' }));
-  program.addCommand(
-    createStubCommand({
-      name: 'config',
-      description: 'Manage Branxa settings',
-      configure: (command) => {
-        command.argument('[action]').argument('[key]').argument('[value]');
-      }
-    })
-  );
+  program.addCommand(createSummarizeCommand(resolveCwd));
+  program.addCommand(createSuggestCommand(resolveCwd));
+  program.addCommand(createCompressCommand(resolveCwd));
+  program.addCommand(createConfigCommand(resolveCwd));
 
   return program;
 }

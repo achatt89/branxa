@@ -27,7 +27,9 @@ jobs:
           node-version: "20"
 
       - name: Build docs site
-        run: npx honkit@5.1.4 build docs docs-site
+        run: |
+          npx honkit@5.1.4 build docs docs-site
+          touch docs-site/.nojekyll
 
       - name: Upload pages artifact
         uses: actions/upload-pages-artifact@v3

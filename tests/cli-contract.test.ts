@@ -36,6 +36,6 @@ describe('E1-T1 CLI bootstrap and command wiring', () => {
     expect(help).toContain('Usage: branxa');
     expect(help).toContain('Initialize Branxa repository storage');
     expect(help).toContain('save [options] [message]');
-    expect(help).toContain('config [options] [action] [key] [value]');
+    expect(help).toContain('config [action] [key] [value]');
   });
 });

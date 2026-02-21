@@ -1,6 +1,10 @@
 import { Command } from 'commander';
 
+import { createDiffCommand } from './commands/diff';
 import { createInitCommand } from './commands/init';
+import { createLogCommand } from './commands/log';
+import { createResumeCommand } from './commands/resume';
+import { createSaveCommand } from './commands/save';
 import { createStubCommand } from './commands/stub';
 
 export interface ProgramDependencies {
@@ -17,42 +21,10 @@ export function createProgram(deps: ProgramDependencies = {}): Command {
     .version('0.1.0');
 
   program.addCommand(createInitCommand(resolveCwd));
-  program.addCommand(
-    createStubCommand({
-      name: 'save',
-      description: 'Save coding context',
-      configure: (command) => {
-        command
-          .argument('[message]')
-          .option('--goal <value>')
-          .option('--auto')
-          .option('--approaches <value>')
-          .option('--decisions <value>')
-          .option('--state <value>')
-          .option('--next-steps <value>')
-          .option('--blockers <value>');
-      }
-    })
-  );
-  program.addCommand(
-    createStubCommand({
-      name: 'resume',
-      description: 'Resume latest coding context',
-      configure: (command) => {
-        command.option('--branch <value>').option('--stdout');
-      }
-    })
-  );
-  program.addCommand(
-    createStubCommand({
-      name: 'log',
-      description: 'View context history',
-      configure: (command) => {
-        command.option('--all').option('--count <value>');
-      }
-    })
-  );
-  program.addCommand(createStubCommand({ name: 'diff', description: 'Compare context with repository state' }));
+  program.addCommand(createSaveCommand(resolveCwd));
+  program.addCommand(createResumeCommand(resolveCwd));
+  program.addCommand(createLogCommand(resolveCwd));
+  program.addCommand(createDiffCommand(resolveCwd));
   program.addCommand(
     createStubCommand({
       name: 'handoff',

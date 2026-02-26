@@ -52,6 +52,7 @@ describe('E7-T1 command bridge behavior', () => {
       'branxa.resume',
       'branxa.log',
       'branxa.diff',
+      'branxa.delete',
     ]);
   });
 

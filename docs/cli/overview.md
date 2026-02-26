@@ -36,6 +36,7 @@ The Branxa CLI is designed to be a high-fidelity capture system for coding conte
 | `summarize` | USes your configured AI to distill recent activity into a brief report. |
 | `suggest` | Predicts and recommends next technical steps based on current state and goals. |
 | `compress` | Condenses a large branch history into a few critical milestone entries. |
+| `delete` | Removes specific context entries or clears the entire history. |
 
 ---
 

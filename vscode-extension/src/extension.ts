@@ -49,6 +49,24 @@ export function activate(context: vscode.ExtensionContext) {
     }),
   );
 
+  context.subscriptions.push(
+    vscode.commands.registerCommand('branxa.deleteLast', async () => {
+      await handleDeleteCommand(['--last']);
+    }),
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand('branxa.deleteId', async () => {
+      await handleDeleteIdCommand();
+    }),
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand('branxa.deleteAll', async () => {
+      await handleDeleteCommand(['--all']);
+    }),
+  );
+
   // 3. Listen for file changes to refresh status bar
   context.subscriptions.push(vscode.workspace.onDidSaveTextDocument(() => updateStatusBar()));
 
@@ -177,6 +195,130 @@ async function handleDiffCommand() {
 
   getOutputChannel().show();
   await runExtensionCommand(executeCli, getOutputChannel(), workspacePath, 'diff');
+}
+
+async function handleDeleteCommand(args: string[]) {
+  const workspacePath = getWorkspacePath();
+  if (!workspacePath) return;
+
+  const isAll = args.includes('--all');
+  const confirmMessage = isAll
+    ? 'Are you sure you want to delete ALL Branxa context history?'
+    : 'Are you sure you want to delete the latest context entry?';
+
+  const confirmed = await vscode.window.showWarningMessage(
+    confirmMessage,
+    { modal: true },
+    'Yes',
+    'No',
+  );
+  if (confirmed !== 'Yes') return;
+
+  await vscode.window.withProgress(
+    {
+      location: vscode.ProgressLocation.Notification,
+      title: isAll ? 'Branxa: Clearing History...' : 'Branxa: Deleting Last Entry...',
+      cancellable: false,
+    },
+    async () => {
+      const result = await runExtensionCommand(
+        executeCli,
+        getOutputChannel(),
+        workspacePath,
+        'delete',
+        args,
+      );
+
+      if (result.exitCode === 0) {
+        vscode.window.showInformationMessage(`Deletion successful! $(check)`);
+        updateStatusBar();
+      } else {
+        vscode.window.showErrorMessage(`Branxa Delete Failed: ${result.stderr}`);
+      }
+    },
+  );
+}
+
+async function handleDeleteIdCommand() {
+  const workspacePath = getWorkspacePath();
+  if (!workspacePath) return;
+
+  // 1. Fetch entries using log command logic (via bridge if possible, or direct CLI)
+  // For better UX, we'll run 'log' to get JSON or parseable output
+  const result = await runExtensionCommand(executeCli, getOutputChannel(), workspacePath, 'log', [
+    '--count',
+    '20',
+  ]);
+
+  if (result.exitCode !== 0) {
+    vscode.window.showErrorMessage(`Failed to fetch history: ${result.stderr}`);
+    return;
+  }
+
+  // 2. We'll reuse the bridge's readBranchEntries logic since we are in the extension
+  // Use .js extensions for ESM compatibility in the extension
+  const { getCurrentBranch } = await import('../../src/lib/git.js');
+  const { readBranchEntries } = await import('../../src/lib/context-store.js');
+  const { sortByTimestampDesc } = await import('../../src/lib/context-utils.js');
+
+  const branch = getCurrentBranch(workspacePath);
+  const entries: any[] = sortByTimestampDesc(await readBranchEntries(workspacePath, branch)).slice(
+    0,
+    20,
+  );
+
+  if (entries.length === 0) {
+    vscode.window.showInformationMessage('No context entries found to delete.');
+    return;
+  }
+
+  const items = entries.map((entry: any) => ({
+    label: entry.timestamp,
+    description: entry.task,
+    detail: `ID: ${entry.id.substring(0, 8)}... | ${entry.currentState}`,
+    id: entry.id,
+  }));
+
+  const selected = await vscode.window.showQuickPick(items, {
+    placeHolder: 'Select a context entry to delete',
+    matchOnDescription: true,
+    matchOnDetail: true,
+  });
+
+  if (!selected) return;
+
+  const confirmed = await vscode.window.showWarningMessage(
+    `Delete context from ${selected.label}?`,
+    { modal: true },
+    'Yes',
+    'No',
+  );
+
+  if (confirmed !== 'Yes') return;
+
+  await vscode.window.withProgress(
+    {
+      location: vscode.ProgressLocation.Notification,
+      title: 'Branxa: Deleting Entry...',
+      cancellable: false,
+    },
+    async () => {
+      const result = await runExtensionCommand(
+        executeCli,
+        getOutputChannel(),
+        workspacePath,
+        'delete',
+        ['--id', selected.id],
+      );
+
+      if (result.exitCode === 0) {
+        vscode.window.showInformationMessage(`Entry deleted successfully! $(check)`);
+        updateStatusBar();
+      } else {
+        vscode.window.showErrorMessage(`Branxa Delete Failed: ${result.stderr}`);
+      }
+    },
+  );
 }
 
 async function updateStatusBar() {

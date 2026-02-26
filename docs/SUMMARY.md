@@ -13,6 +13,7 @@
   - [watch and hook](cli/automation.md)
   - [summarize, suggest, compress](cli/ai.md)
   - [config](cli/config.md)
+  - [delete](cli/delete.md)
 - [Adapters]
   - [MCP](adapters/mcp.md)
   - [VS Code Bridge](adapters/vscode.md)

@@ -39,11 +39,11 @@ It keeps a structured history of task intent, state, decisions, next steps, bloc
 
 ## Features
 
-- **Core context lifecycle:** `init`, `save`, `resume`, `log`, `diff`
+- **Core context lifecycle:** `init`, `save`, `resume`, `log`, `diff`, `delete`
 - **Team flows:** `handoff`, `share`
 - **Automation:** `watch`, `hook`
 - **AI features:** `summarize`, `suggest`
-- **History management:** `compress`
+- **History management:** `compress`, `delete`
 - **Configuration:** `config list/get/set`
 - **Adapters:** MCP (`branxa-mcp`) and VS Code bridge helpers
 - **Auto extraction pipeline:** Claude -> Antigravity -> Cursor fallback
@@ -201,6 +201,22 @@ Options:
 
 - `--all` (aggregate all branch histories)
 - `--count <value>` (bounded to 1..100)
+
+---
+
+### `branxa delete`
+
+Delete context entries.
+
+```bash
+branxa delete [options]
+```
+
+Options:
+
+- `--last`: Delete the single most recent entry for the current branch.
+- `--id <id>`: Delete a specific entry by its unique ID.
+- `--all`: Delete **all** context entries and session snapshots across all branches.
 
 ---
 
@@ -471,6 +487,34 @@ If omitted, Branxa uses `defaultLogCount` from config.
 
 ---
 
+### `delete` options
+
+#### `--last`
+
+Removes the single most recent context entry for the current branch.
+
+```bash
+branxa delete --last
+```
+
+#### `--id <value>`
+
+Removes a specific entry by its unique ID. You can find IDs using `branxa log`.
+
+```bash
+branxa delete --id 3b6ee836-bf1a-4f66-8867-d3f5d147f5bb
+```
+
+#### `--all`
+
+Destructive operation that clears all stored context history and session snapshots across all branches.
+
+```bash
+branxa delete --all
+```
+
+---
+
 ### `share` options
 
 #### `--stop`
@@ -564,6 +608,9 @@ branxa config set aiModel gpt-4o-mini
 | `resume` | `--stdout` | boolean | print prompt | `branxa resume --stdout` |
 | `log` | `--all` | boolean | include all branches | `branxa log --all` |
 | `log` | `--count` | number | max entries (1..100) | `branxa log --count 10` |
+| `delete` | `--last` | boolean | delete latest entry | `branxa delete --last` |
+| `delete` | `--id` | string | delete specific entry | `branxa delete --id <id>` |
+| `delete` | `--all` | boolean | clear all context | `branxa delete --all` |
 | `share` | `--stop` | boolean | stop sharing `.branxa/` | `branxa share --stop` |
 | `watch` | `--interval` | number | polling seconds | `branxa watch --interval 30` |
 | `hook` | `install` | arg | install managed hook | `branxa hook install` |

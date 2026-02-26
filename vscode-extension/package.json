@@ -45,6 +45,21 @@
                 "command": "branxa.diff",
                 "title": "Branxa: Show Drift (Diff)",
                 "category": "Branxa"
+            },
+            {
+                "command": "branxa.deleteLast",
+                "title": "Branxa: Delete Last Entry",
+                "category": "Branxa"
+            },
+            {
+                "command": "branxa.deleteId",
+                "title": "Branxa: Delete Specific Entry (Select)",
+                "category": "Branxa"
+            },
+            {
+                "command": "branxa.deleteAll",
+                "title": "Branxa: Clear All History",
+                "category": "Branxa"
             }
         ],
         "configuration": {

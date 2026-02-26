@@ -13,7 +13,8 @@ const EXPECTED_COMMANDS = [
   'summarize',
   'suggest',
   'compress',
-  'config'
+  'config',
+  'delete',
 ];
 
 describe('E1-T1 CLI bootstrap and command wiring', () => {

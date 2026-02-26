@@ -24,6 +24,7 @@ export const VS_CODE_COMMANDS = [
   'branxa.resume',
   'branxa.log',
   'branxa.diff',
+  'branxa.delete',
 ] as const;
 
 export function buildNpxArgs(command: string, args: string[]): string[] {
@@ -47,7 +48,7 @@ export async function runExtensionCommand(
   executor: CommandExecutor,
   outputChannel: OutputChannelLike,
   workspacePath: string,
-  command: 'init' | 'save' | 'resume' | 'log' | 'diff',
+  command: 'init' | 'save' | 'resume' | 'log' | 'diff' | 'delete',
   args: string[] = [],
 ): Promise<CommandExecutionResult> {
   const result = await runBranxaCli(executor, workspacePath, command, args);

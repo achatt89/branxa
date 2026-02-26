@@ -109,6 +109,7 @@ Branxa can help you analyze your own progress using your configured AI provider:
 - **Summarize Activity**: `branxa summarize`
 - **Next Steps Suggestion**: `branxa suggest`
 - **History Compression**: `branxa compress` (condenses long branch histories into vital checkpoints)
+- **Delete Context**: `branxa delete` (removes context via `--last`, `--id`, or `--all`)
 
 ---
 

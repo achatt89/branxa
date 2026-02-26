@@ -38,6 +38,8 @@ Press `Ctrl+Shift+P` (or `Cmd+Shift+P` on Mac) and type `Branxa` to see all avai
 - **Branxa: Resume Context**: Generates the context prompt and copies it to your clipboard.
 - **Branxa: View History**: Opens the Branxa log in an output channel.
 - **Branxa: Show Drift (Diff)**: Shows a breakdown of local changes since the last save.
+- **Branxa: Delete Last Entry**: Removes the most recent context entry (with confirmation).
+- **Branxa: Clear All History**: Destructive cleanup of all context data (with confirmation).
 
 ### Auto-Resume on Startup
 By default, the extension can be configured to show your context prompt as soon as you open a workspace. This helps you immediately recall where you left off.
@@ -54,6 +56,8 @@ If you are building your own VS Code tasks or keybindings, you can use these com
 | `branxa.resume` | Executes `branxa resume` and copies the context prompt to the clipboard. |
 | `branxa.log` | Shows the context history for the current branch in an output channel. |
 | `branxa.diff` | Compares current Git state with the latest context. |
+| `branxa.deleteLast` | Deletes the latest context entry. |
+| `branxa.deleteAll` | Full context cleanup. |
 
 ## 3. Extension Behavior
 

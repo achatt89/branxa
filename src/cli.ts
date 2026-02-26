@@ -13,6 +13,7 @@ import { createShareCommand } from './commands/share';
 import { createSuggestCommand } from './commands/suggest';
 import { createSummarizeCommand } from './commands/summarize';
 import { createWatchCommand } from './commands/watch';
+import { createDeleteCommand } from './commands/delete';
 
 export interface ProgramDependencies {
   cwd?: () => string;
@@ -22,10 +23,7 @@ export function createProgram(deps: ProgramDependencies = {}): Command {
   const resolveCwd = deps.cwd ?? (() => process.cwd());
   const program = new Command();
 
-  program
-    .name('branxa')
-    .description('Branxa persistent coding context system')
-    .version('0.1.0');
+  program.name('branxa').description('Branxa persistent coding context system').version('0.1.0');
 
   program.addCommand(createInitCommand(resolveCwd));
   program.addCommand(createSaveCommand(resolveCwd));
@@ -40,6 +38,7 @@ export function createProgram(deps: ProgramDependencies = {}): Command {
   program.addCommand(createSuggestCommand(resolveCwd));
   program.addCommand(createCompressCommand(resolveCwd));
   program.addCommand(createConfigCommand(resolveCwd));
+  program.addCommand(createDeleteCommand(resolveCwd));
 
   return program;
 }

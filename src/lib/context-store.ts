@@ -1,7 +1,12 @@
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 
-import { BRANXA_BRANCHES_DIR, BRANXA_CONFIG_PATH, BRANXA_ROOT_DIR, BRANXA_SESSIONS_DIR } from './paths';
+import {
+  BRANXA_BRANCHES_DIR,
+  BRANXA_CONFIG_PATH,
+  BRANXA_ROOT_DIR,
+  BRANXA_SESSIONS_DIR,
+} from './paths';
 import type { ContextEntry } from '../types';
 
 function branchFilename(branch: string): string {
@@ -13,29 +18,34 @@ function branchPath(cwd: string, branch: string): string {
 }
 
 export async function isBranxaInitialized(cwd: string): Promise<boolean> {
-  const checks = [BRANXA_ROOT_DIR, BRANXA_SESSIONS_DIR, BRANXA_BRANCHES_DIR, BRANXA_CONFIG_PATH].map(
-    async (relative) => {
-      try {
-        await fs.access(path.join(cwd, relative));
-        return true;
-      } catch {
-        return false;
-      }
+  const checks = [
+    BRANXA_ROOT_DIR,
+    BRANXA_SESSIONS_DIR,
+    BRANXA_BRANCHES_DIR,
+    BRANXA_CONFIG_PATH,
+  ].map(async (relative) => {
+    try {
+      await fs.access(path.join(cwd, relative));
+      return true;
+    } catch {
+      return false;
     }
-  );
+  });
 
   const result = await Promise.all(checks);
   return result.every(Boolean);
 }
 
-export async function assertInitialized(cwd: string): Promise<{ ok: true } | { ok: false; message: string }> {
+export async function assertInitialized(
+  cwd: string,
+): Promise<{ ok: true } | { ok: false; message: string }> {
   if (await isBranxaInitialized(cwd)) {
     return { ok: true };
   }
 
   return {
     ok: false,
-    message: "Branxa is not initialized in this repository. Run 'branxa init' first."
+    message: "Branxa is not initialized in this repository. Run 'branxa init' first.",
   };
 }
 
@@ -65,7 +75,11 @@ export async function readBranchEntries(cwd: string, branch: string): Promise<Co
   }
 }
 
-export async function writeBranchEntries(cwd: string, branch: string, entries: ContextEntry[]): Promise<void> {
+export async function writeBranchEntries(
+  cwd: string,
+  branch: string,
+  entries: ContextEntry[],
+): Promise<void> {
   const filePath = branchPath(cwd, branch);
   await fs.mkdir(path.dirname(filePath), { recursive: true });
   await fs.writeFile(filePath, `${JSON.stringify(entries, null, 2)}\n`, 'utf8');
@@ -77,14 +91,21 @@ export async function appendBranchEntry(cwd: string, entry: ContextEntry): Promi
   await writeBranchEntries(cwd, entry.branch, entries);
 }
 
-export async function mergeBranchEntries(cwd: string, branch: string, incoming: ContextEntry[]): Promise<ContextEntry[]> {
+export async function mergeBranchEntries(
+  cwd: string,
+  branch: string,
+  incoming: ContextEntry[],
+): Promise<ContextEntry[]> {
   const existing = await readBranchEntries(cwd, branch);
   const merged = mergeAndSortEntries(existing, incoming);
   await writeBranchEntries(cwd, branch, merged);
   return merged;
 }
 
-export function mergeAndSortEntries(existing: ContextEntry[], incoming: ContextEntry[]): ContextEntry[] {
+export function mergeAndSortEntries(
+  existing: ContextEntry[],
+  incoming: ContextEntry[],
+): ContextEntry[] {
   const byId = new Map<string, ContextEntry>();
 
   for (const entry of [...existing, ...incoming]) {
@@ -124,7 +145,7 @@ export async function readSessionEntries(cwd: string): Promise<ContextEntry[]> {
           } catch {
             return null;
           }
-        })
+        }),
     );
 
     return entries.filter((entry): entry is ContextEntry => Boolean(entry));
@@ -154,7 +175,7 @@ export async function readAllBranchEntries(cwd: string): Promise<ContextEntry[]>
           } catch {
             return [];
           }
-        })
+        }),
     );
 
     return allEntries.flat();
@@ -165,5 +186,45 @@ export async function readAllBranchEntries(cwd: string): Promise<ContextEntry[]>
     }
 
     throw error;
+  }
+}
+
+export async function deleteBranchEntry(cwd: string, branch: string, id: string): Promise<boolean> {
+  const entries = await readBranchEntries(cwd, branch);
+  const filtered = entries.filter((e) => e.id !== id);
+
+  if (entries.length === filtered.length) {
+    return false;
+  }
+
+  await writeBranchEntries(cwd, branch, filtered);
+
+  // Also try to delete from sessions if it exists
+  const sessionPath = path.join(cwd, BRANXA_SESSIONS_DIR, `${id}.json`);
+  try {
+    await fs.unlink(sessionPath);
+  } catch {
+    // Ignore if session file doesn't exist
+  }
+
+  return true;
+}
+
+export async function deleteAllEntries(cwd: string): Promise<void> {
+  const branchesPath = path.join(cwd, BRANXA_BRANCHES_DIR);
+  const sessionsPath = path.join(cwd, BRANXA_SESSIONS_DIR);
+
+  try {
+    const branchFiles = await fs.readdir(branchesPath);
+    await Promise.all(branchFiles.map((f) => fs.unlink(path.join(branchesPath, f))));
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
+  }
+
+  try {
+    const sessionFiles = await fs.readdir(sessionsPath);
+    await Promise.all(sessionFiles.map((f) => fs.unlink(path.join(sessionsPath, f))));
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
   }
 }

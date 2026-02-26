@@ -2,7 +2,7 @@
     "name": "branxa-vscode",
     "displayName": "Branxa",
     "description": "Persistent Context System for AI-Native Coding",
-    "version": "0.1.5",
+    "version": "1.0.0",
     "publisher": "thelogicatelier",
     "repository": {
         "type": "git",

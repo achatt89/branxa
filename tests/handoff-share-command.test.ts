@@ -1,7 +1,7 @@
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 
-import { currentBranch, makeGitRepo, runGit } from './helpers';
+import { currentBranch, makeGitRepo, noPrompt, runGit } from './helpers';
 
 import { runHandoff } from '../src/commands/handoff';
 import { runInit } from '../src/commands/init';
@@ -13,7 +13,7 @@ describe('E3-T1 handoff workflow', () => {
   test('handoff quick mode persists assignee and note', async () => {
     const repoPath = await makeGitRepo('branxa-handoff-quick-');
     await runInit(repoPath);
-    await runSave(repoPath, 'Implement collaboration commands', { state: 'in progress' });
+    await runSave(repoPath, 'Implement collaboration commands', { state: 'in progress' }, noPrompt);
 
     const result = await runHandoff(repoPath, 'alice', 'Please finalize and ship this branch');
 
@@ -34,7 +34,7 @@ describe('E3-T1 handoff workflow', () => {
     let index = 0;
 
     const result = await runHandoff(repoPath, undefined, undefined, {
-      prompt: async () => responses[index++] ?? ''
+      prompt: async () => responses[index++] ?? '',
     });
 
     expect(result.ok).toBe(true);

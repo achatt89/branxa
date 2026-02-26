@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import readline from 'node:readline';
 
 import { readMcpResource, runMcpTool } from './contracts';
@@ -20,7 +21,7 @@ type MCPRequest =
 async function main(): Promise<void> {
   const rl = readline.createInterface({
     input: process.stdin,
-    crlfDelay: Infinity
+    crlfDelay: Infinity,
   });
 
   for await (const line of rl) {

@@ -1,0 +1,23 @@
+{
+    "compilerOptions": {
+        "module": "Node16",
+        "target": "ES2022",
+        "outDir": "dist",
+        "lib": [
+            "ES2022"
+        ],
+        "sourceMap": true,
+        "strict": true,
+        "noImplicitAny": true,
+        "moduleResolution": "Node16",
+        "esModuleInterop": true
+    },
+    "include": [
+        "src/**/*",
+        "../src/vscode/bridge.ts"
+    ],
+    "exclude": [
+        "node_modules",
+        ".vscode-test"
+    ]
+}

@@ -1,4 +1,4 @@
-import { makeGitRepo } from './helpers';
+import { makeGitRepo, noPrompt } from './helpers';
 
 import { runInit } from '../src/commands/init';
 import { runSave } from '../src/commands/save';
@@ -9,7 +9,7 @@ import {
   VS_CODE_COMMANDS,
   type CommandExecutionResult,
   type CommandExecutor,
-  type OutputChannelLike
+  type OutputChannelLike,
 } from '../src/vscode/bridge';
 
 function makeOutputChannel(): { channel: OutputChannelLike; lines: string[] } {
@@ -19,8 +19,8 @@ function makeOutputChannel(): { channel: OutputChannelLike; lines: string[] } {
     channel: {
       appendLine(value: string): void {
         lines.push(value);
-      }
-    }
+      },
+    },
   };
 }
 
@@ -32,19 +32,27 @@ describe('E7-T1 command bridge behavior', () => {
     const executor: CommandExecutor = jest.fn(async () => ({
       stdout: 'resume output',
       stderr: '',
-      exitCode: 0
+      exitCode: 0,
     }));
 
-    const result = await runExtensionCommand(executor, output.channel, repoPath, 'resume', ['--stdout']);
+    const result = await runExtensionCommand(executor, output.channel, repoPath, 'resume', [
+      '--stdout',
+    ]);
 
     expect(result.exitCode).toBe(0);
     expect(executor).toHaveBeenCalledWith({
       cwd: repoPath,
       command: 'npx',
-      args: ['branxa', 'resume', '--stdout']
+      args: ['branxa', 'resume', '--stdout'],
     });
     expect(output.lines).toEqual(['resume output']);
-    expect(VS_CODE_COMMANDS).toEqual(['branxa.save', 'branxa.resume', 'branxa.log', 'branxa.diff']);
+    expect(VS_CODE_COMMANDS).toEqual([
+      'branxa.init',
+      'branxa.save',
+      'branxa.resume',
+      'branxa.log',
+      'branxa.diff',
+    ]);
   });
 
   test('output channel renders for log and diff command output', async () => {
@@ -54,7 +62,7 @@ describe('E7-T1 command bridge behavior', () => {
     const executor: CommandExecutor = jest.fn(async ({ args }) => ({
       stdout: args[1] === 'log' ? 'log output line' : 'diff output line',
       stderr: '',
-      exitCode: 0
+      exitCode: 0,
     }));
 
     await runExtensionCommand(executor, output.channel, repoPath, 'log');
@@ -69,18 +77,20 @@ describe('E7-T2 startup and status behavior', () => {
     const repoPath = await makeGitRepo('branxa-vscode-startup-');
     const output = makeOutputChannel();
 
-    const executor: CommandExecutor = jest.fn(async (): Promise<CommandExecutionResult> => ({
-      stdout: 'startup resume output',
-      stderr: '',
-      exitCode: 0
-    }));
+    const executor: CommandExecutor = jest.fn(
+      async (): Promise<CommandExecutionResult> => ({
+        stdout: 'startup resume output',
+        stderr: '',
+        exitCode: 0,
+      }),
+    );
 
     await tryStartupAutoResume(executor, output.channel, repoPath);
 
     expect(executor).toHaveBeenCalledWith({
       cwd: repoPath,
       command: 'npx',
-      args: ['branxa', 'resume', '--stdout']
+      args: ['branxa', 'resume', '--stdout'],
     });
     expect(output.lines).toContain('startup resume output');
   });
@@ -92,7 +102,12 @@ describe('E7-T2 startup and status behavior', () => {
     const emptyStatus = await resolveStatusBarText(repoPath);
     expect(emptyStatus).toBe('Branxa: no context');
 
-    await runSave(repoPath, 'Status test task', { state: 'saved for status' }, { now: () => new Date('2026-02-21T10:10:10Z') });
+    await runSave(
+      repoPath,
+      'Status test task',
+      { state: 'saved for status' },
+      { ...noPrompt, now: () => new Date('2026-02-21T10:10:10Z') },
+    );
 
     const filledStatus = await resolveStatusBarText(repoPath);
     expect(filledStatus).toBe('Branxa: 2026-02-21T10:10:10.000Z');

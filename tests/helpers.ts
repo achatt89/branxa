@@ -21,7 +21,7 @@ export function runGit(cwd: string, args: string[]): string {
   return execFileSync('git', args, {
     cwd,
     encoding: 'utf8',
-    stdio: ['ignore', 'pipe', 'pipe']
+    stdio: ['ignore', 'pipe', 'pipe'],
   }).trim();
 }
 
@@ -33,3 +33,6 @@ export function commitAll(cwd: string, message: string): void {
   runGit(cwd, ['add', '-A']);
   runGit(cwd, ['commit', '-m', message]);
 }
+
+/** No-op prompt deps that prevent real readline sessions during tests */
+export const noPrompt = { prompt: async () => '' };

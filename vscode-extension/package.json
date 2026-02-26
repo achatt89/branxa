@@ -1,0 +1,78 @@
+{
+    "name": "branxa-vscode",
+    "displayName": "Branxa",
+    "description": "Persistent Context System for AI-Native Coding",
+    "version": "0.1.0",
+    "publisher": "thelogicatelier",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/achatt89/branxa.git"
+    },
+    "license": "MIT",
+    "engines": {
+        "vscode": "^1.85.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [
+        "onStartupFinished"
+    ],
+    "main": "./dist/vscode-extension/src/extension.js",
+    "contributes": {
+        "commands": [
+            {
+                "command": "branxa.init",
+                "title": "Branxa: Init",
+                "category": "Branxa"
+            },
+            {
+                "command": "branxa.save",
+                "title": "Branxa: Save Context",
+                "category": "Branxa"
+            },
+            {
+                "command": "branxa.resume",
+                "title": "Branxa: Resume Context",
+                "category": "Branxa"
+            },
+            {
+                "command": "branxa.log",
+                "title": "Branxa: View History",
+                "category": "Branxa"
+            },
+            {
+                "command": "branxa.diff",
+                "title": "Branxa: Show Drift (Diff)",
+                "category": "Branxa"
+            }
+        ],
+        "configuration": {
+            "title": "Branxa",
+            "properties": {
+                "branxa.autoResumeOnStartup": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Automatically show the resume prompt when opening a Branxa-enabled workspace."
+                },
+                "branxa.cliPath": {
+                    "type": "string",
+                    "default": "npx @thelogicatelier/branxa",
+                    "description": "Path to the Branxa CLI binary if not using global npx."
+                }
+            }
+        }
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "package": "vsce package -o dist/"
+    },
+    "devDependencies": {
+        "@types/vscode": "^1.85.0",
+        "@types/node": "^20.x",
+        "typescript": "^5.x",
+        "@vscode/vsce": "^2.x"
+    }
+}

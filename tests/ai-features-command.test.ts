@@ -1,7 +1,7 @@
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 
-import { currentBranch, makeGitRepo } from './helpers';
+import { currentBranch, makeGitRepo, noPrompt } from './helpers';
 
 import { runCompress } from '../src/commands/compress';
 import { runInit } from '../src/commands/init';
@@ -28,9 +28,9 @@ describe('E4-T1 summarize command', () => {
           decisions: ['store branch entry'],
           currentState: 'summary generated',
           nextSteps: ['write tests', 'ship'],
-          blockers: []
+          blockers: [],
         });
-      }
+      },
     });
 
     expect(result.ok).toBe(true);
@@ -49,7 +49,7 @@ describe('E4-T1 summarize command', () => {
     await runInit(repoPath);
 
     const result = await runSummarize(repoPath, {
-      askAI: async () => 'This is free-form summary text, not JSON.'
+      askAI: async () => 'This is free-form summary text, not JSON.',
     });
 
     expect(result.ok).toBe(true);
@@ -66,10 +66,15 @@ describe('E4-T2 suggest command', () => {
   test('emits 3-5 actionable steps when context exists', async () => {
     const repoPath = await makeGitRepo('branxa-suggest-steps-');
     await runInit(repoPath);
-    await runSave(repoPath, 'Implement suggest command', { state: 'ready for AI suggestions' });
+    await runSave(
+      repoPath,
+      'Implement suggest command',
+      { state: 'ready for AI suggestions' },
+      noPrompt,
+    );
 
     const result = await runSuggest(repoPath, {
-      askAI: async () => JSON.stringify(['Step 1', 'Step 2', 'Step 3', 'Step 4'])
+      askAI: async () => JSON.stringify(['Step 1', 'Step 2', 'Step 3', 'Step 4']),
     });
 
     expect(result.ok).toBe(true);
@@ -95,8 +100,8 @@ describe('E4-T3 compress command', () => {
     const repoPath = await makeGitRepo('branxa-compress-block-');
     await runInit(repoPath);
 
-    await runSave(repoPath, 'entry one', { state: 'one' });
-    await runSave(repoPath, 'entry two', { state: 'two' });
+    await runSave(repoPath, 'entry one', { state: 'one' }, noPrompt);
+    await runSave(repoPath, 'entry two', { state: 'two' }, noPrompt);
 
     const result = await runCompress(repoPath);
 
@@ -110,15 +115,30 @@ describe('E4-T3 compress command', () => {
     const repoPath = await makeGitRepo('branxa-compress-rewrite-');
     await runInit(repoPath);
 
-    await runSave(repoPath, 'entry one', { state: 'one', decisions: 'd1', nextSteps: 'n1' });
-    await runSave(repoPath, 'entry two', { state: 'two', decisions: 'd2', nextSteps: 'n2' });
-    await runSave(repoPath, 'entry three', { state: 'three', decisions: 'd3', nextSteps: 'n3' });
+    await runSave(
+      repoPath,
+      'entry one',
+      { state: 'one', decisions: 'd1', nextSteps: 'n1' },
+      noPrompt,
+    );
+    await runSave(
+      repoPath,
+      'entry two',
+      { state: 'two', decisions: 'd2', nextSteps: 'n2' },
+      noPrompt,
+    );
+    await runSave(
+      repoPath,
+      'entry three',
+      { state: 'three', decisions: 'd3', nextSteps: 'n3' },
+      noPrompt,
+    );
 
     const before = await readBranchEntries(repoPath, currentBranch(repoPath));
     const latestBefore = before[before.length - 1];
 
     const result = await runCompress(repoPath, {
-      now: () => new Date('2026-02-21T09:00:00Z')
+      now: () => new Date('2026-02-21T09:00:00Z'),
     });
 
     expect(result.ok).toBe(true);

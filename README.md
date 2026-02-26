@@ -50,7 +50,7 @@ It keeps a structured history of task intent, state, decisions, next steps, bloc
 
 ## Requirements
 
-- Node.js `>= 20`
+- Node.js `>= 22`
 - Git repository (all runtime commands require a Git work tree)
 - Optional for AI commands:
   - an OpenAI-compatible provider endpoint
@@ -65,7 +65,7 @@ It keeps a structured history of task intent, state, decisions, next steps, bloc
 ### Install from npm (global)
 
 ```bash
-npm install -g branxa
+npm install -g @thelogicatelier/branxa
 ```
 
 Then run:
@@ -77,13 +77,13 @@ branxa --help
 ### Run without global install
 
 ```bash
-npx branxa@latest --help
+npx @thelogicatelier/branxa --help
 ```
 
 ### Local development install
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/achatt89/branxa.git
 cd branxa
 npm install
 npm run build
@@ -887,8 +887,8 @@ npm publish --access public
 Post-publish sanity:
 
 ```bash
-npx branxa@latest --help
-npx branxa@latest init
+npx @thelogicatelier/branxa --help
+npx @thelogicatelier/branxa init
 ```
 
 ## Privacy and security notes
@@ -896,3 +896,7 @@ npx branxa@latest init
 - Branxa stores context locally in your repository.
 - AI commands (`summarize`, `suggest`) send prompt data to your configured AI provider endpoint.
 - Avoid storing secrets in context notes if `.branxa/` is shared with Git.
+
+---
+
+Built by [The Logic Atelier](https://thelogicatelier.com)

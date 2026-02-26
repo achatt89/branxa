@@ -1,4 +1,4 @@
-import { makeGitRepo } from './helpers';
+import { makeGitRepo, noPrompt } from './helpers';
 
 import { runInit } from '../src/commands/init';
 import { runResume } from '../src/commands/resume';
@@ -9,7 +9,7 @@ describe('E2-T2 resume command contract', () => {
     const repoPath = await makeGitRepo('branxa-resume-stdout-');
     await runInit(repoPath);
 
-    await runSave(repoPath, 'Implement resume command', { state: 'core behavior done' });
+    await runSave(repoPath, 'Implement resume command', { state: 'core behavior done' }, noPrompt);
 
     const result = await runResume(repoPath, { stdout: true });
 
@@ -23,7 +23,7 @@ describe('E2-T2 resume command contract', () => {
     const repoPath = await makeGitRepo('branxa-resume-clipboard-');
     await runInit(repoPath);
 
-    await runSave(repoPath, 'Implement clipboard fallback', { state: 'ready to resume' });
+    await runSave(repoPath, 'Implement clipboard fallback', { state: 'ready to resume' }, noPrompt);
 
     const clipboardWriter = jest.fn(() => false);
     const result = await runResume(repoPath, {}, { writeClipboard: clipboardWriter });

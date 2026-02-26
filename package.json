@@ -1,8 +1,7 @@
 {
-  "name": "branxa",
+  "name": "@thelogicatelier/branxa",
   "version": "0.1.0",
   "description": "Branxa Persistent Context System",
-  "private": true,
   "type": "commonjs",
   "bin": {
     "branxa": "dist/index.js",
@@ -10,14 +9,39 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "test": "jest --runInBand",
+    "test": "jest --runInBand --forceExit",
     "dev": "tsx src/index.ts",
     "mcp": "tsx src/mcp/index.ts",
     "docs:build": "npx honkit@5.1.4 build docs docs-site",
-    "docs:serve": "npx honkit@5.1.4 serve docs"
+    "docs:serve": "npx honkit@5.1.4 serve docs",
+    "prepublishOnly": "npm run build && npm test",
+    "version": "npm version $npm_package_version --prefix vscode-extension --no-git-tag-version && git add vscode-extension/package.json",
+    "prepare": "husky"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/achatt89/branxa.git"
+  },
+  "keywords": [
+    "context",
+    "git",
+    "cli",
+    "persistent",
+    "branching",
+    "mcp",
+    "ai",
+    "developer-tools"
+  ],
+  "author": "Abhijit Chatterjee",
+  "bugs": {
+    "url": "https://github.com/achatt89/branxa/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "homepage": "https://achatt89.github.io/branxa/",
   "engines": {
-    "node": ">=20"
+    "node": ">=22"
   },
   "dependencies": {
     "commander": "^13.1.0"
@@ -25,9 +49,21 @@
   "devDependencies": {
     "@types/jest": "^29.5.14",
     "@types/node": "^22.13.10",
+    "husky": "^9.1.7",
     "jest": "^29.7.0",
+    "lint-staged": "^15.4.3",
+    "prettier": "^3.8.1",
     "ts-jest": "^29.2.6",
     "tsx": "^4.19.3",
     "typescript": "^5.8.2"
+  },
+  "license": "MIT",
+  "files": [
+    "dist"
+  ],
+  "lint-staged": {
+    "*.ts": [
+      "prettier --write"
+    ]
   }
 }

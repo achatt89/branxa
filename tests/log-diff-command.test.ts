@@ -1,7 +1,7 @@
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 
-import { commitAll, currentBranch, makeGitRepo, runGit } from './helpers';
+import { commitAll, currentBranch, makeGitRepo, noPrompt, runGit } from './helpers';
 
 import { runDiff } from '../src/commands/diff';
 import { runInit } from '../src/commands/init';
@@ -18,11 +18,26 @@ describe('E2-T3 log and diff visibility', () => {
 
     const mainBranch = currentBranch(repoPath);
 
-    await runSave(repoPath, 'main task one', { state: 'first' }, { now: () => new Date('2026-02-21T00:00:01Z') });
-    await runSave(repoPath, 'main task two', { state: 'second' }, { now: () => new Date('2026-02-21T00:00:02Z') });
+    await runSave(
+      repoPath,
+      'main task one',
+      { state: 'first' },
+      { ...noPrompt, now: () => new Date('2026-02-21T00:00:01Z') },
+    );
+    await runSave(
+      repoPath,
+      'main task two',
+      { state: 'second' },
+      { ...noPrompt, now: () => new Date('2026-02-21T00:00:02Z') },
+    );
 
     runGit(repoPath, ['checkout', '-b', 'feature/log-view']);
-    await runSave(repoPath, 'feature task one', { state: 'third' }, { now: () => new Date('2026-02-21T00:00:03Z') });
+    await runSave(
+      repoPath,
+      'feature task one',
+      { state: 'third' },
+      { ...noPrompt, now: () => new Date('2026-02-21T00:00:03Z') },
+    );
 
     runGit(repoPath, ['checkout', mainBranch]);
 
@@ -64,7 +79,7 @@ describe('E2-T3 log and diff visibility', () => {
       blockers: [],
       filesChanged: ['a.txt', 'b.txt'],
       filesStaged: [],
-      recentCommits: []
+      recentCommits: [],
     };
 
     await writeBranchEntries(repoPath, branch, [
@@ -73,15 +88,15 @@ describe('E2-T3 log and diff visibility', () => {
         id: 'entry-1',
         timestamp: '2026-02-21T00:00:01Z',
         decisions: ['decision one'],
-        nextSteps: ['step one']
+        nextSteps: ['step one'],
       },
       {
         ...baseEntry,
         id: 'entry-2',
         timestamp: '2026-02-21T00:00:02Z',
         decisions: ['decision one', 'decision two'],
-        nextSteps: ['step two']
-      }
+        nextSteps: ['step two'],
+      },
     ]);
 
     const result = await runDiff(repoPath);

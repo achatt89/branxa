@@ -12,9 +12,14 @@ describe('E2-T1 save command modes', () => {
     const responses = ['Implement parser', 'in progress', 'ship parity', 'step 1;;step 2', 'none'];
     let index = 0;
 
-    const result = await runSave(repoPath, undefined, {}, {
-      prompt: async () => responses[index++] ?? ''
-    });
+    const result = await runSave(
+      repoPath,
+      undefined,
+      {},
+      {
+        prompt: async () => responses[index++] ?? '',
+      },
+    );
 
     expect(result.ok).toBe(true);
     expect(result.entry?.task).toBe('Implement parser');
@@ -40,9 +45,9 @@ describe('E2-T1 save command modes', () => {
         decisions: 'decision one;; decision two',
         state: 'implemented and pending tests',
         nextSteps: 'write tests;;run test suite',
-        blockers: 'none;;network flake'
+        blockers: 'none;;network flake',
       },
-      {}
+      {},
     );
 
     expect(result.ok).toBe(true);
@@ -65,11 +70,12 @@ describe('E2-T1 save command modes', () => {
       'Fallback task',
       {
         auto: true,
-        state: 'continuing without extracted context'
+        state: 'continuing without extracted context',
       },
       {
-        autoExtract
-      }
+        autoExtract,
+        prompt: async () => '',
+      },
     );
 
     expect(result.ok).toBe(true);

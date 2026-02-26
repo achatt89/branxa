@@ -1,4 +1,4 @@
-import { makeGitRepo } from './helpers';
+import { makeGitRepo, noPrompt } from './helpers';
 
 import { runInit } from '../src/commands/init';
 import { runSave } from '../src/commands/save';
@@ -11,7 +11,7 @@ describe('E6-T1 MCP tool contracts', () => {
 
     const saveResult = await runMcpTool(repoPath, 'branxa_save', {
       message: 'MCP save task',
-      state: 'saved via mcp'
+      state: 'saved via mcp',
     });
 
     expect(saveResult.content).toHaveLength(1);
@@ -29,7 +29,7 @@ describe('E6-T1 MCP tool contracts', () => {
 
     const resumeResult = await runMcpTool(repoPath, 'branxa_resume', {});
 
-    expect(resumeResult.content[0].text).toContain('Run \'branxa init\' first');
+    expect(resumeResult.content[0].text).toContain("Run 'branxa init' first");
   });
 });
 
@@ -41,7 +41,7 @@ describe('E6-T2 MCP resource contract', () => {
     const emptyResource = await readMcpResource(repoPath, 'branxa://context');
     expect(emptyResource.text).toContain('No saved context');
 
-    await runSave(repoPath, 'Resource context task', { state: 'ready for resume' });
+    await runSave(repoPath, 'Resource context task', { state: 'ready for resume' }, noPrompt);
 
     const filledResource = await readMcpResource(repoPath, 'branxa://context');
     expect(filledResource.uri).toBe('branxa://context');

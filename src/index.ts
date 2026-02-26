@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { createProgram } from './cli';
 
 async function main(): Promise<void> {

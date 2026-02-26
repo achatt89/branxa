@@ -1,7 +1,7 @@
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 
-import { makeGitRepo } from './helpers';
+import { makeGitRepo, noPrompt } from './helpers';
 
 import { createProgram } from '../src/cli';
 import { runDiff } from '../src/commands/diff';
@@ -31,9 +31,12 @@ describe('E9-T1 interface parity verification', () => {
     const manifest = await fs.readFile(manifestPath, 'utf8');
 
     const cliSection = manifest.split('## 2) MCP Tools')[0].split('## 1) CLI Commands')[1] ?? '';
-    const mcpToolSection = manifest.split('## 3) MCP Resources')[0].split('## 2) MCP Tools')[1] ?? '';
-    const mcpResourceSection = manifest.split('## 4) VS Code Extension Commands')[0].split('## 3) MCP Resources')[1] ?? '';
-    const vscodeSection = manifest.split('## 5) Change Control')[0].split('## 4) VS Code Extension Commands')[1] ?? '';
+    const mcpToolSection =
+      manifest.split('## 3) MCP Resources')[0].split('## 2) MCP Tools')[1] ?? '';
+    const mcpResourceSection =
+      manifest.split('## 4) VS Code Extension Commands')[0].split('## 3) MCP Resources')[1] ?? '';
+    const vscodeSection =
+      manifest.split('## 5) Change Control')[0].split('## 4) VS Code Extension Commands')[1] ?? '';
 
     const manifestCliCommands = extractManifestEntries(cliSection)
       .filter((entry) => entry.startsWith('branxa '))
@@ -62,10 +65,15 @@ describe('E9-T2 end-to-end branch continuity flow', () => {
     const initResult = await runInit(repoPath);
     expect(initResult.ok).toBe(true);
 
-    const saveResult = await runSave(repoPath, 'Implement release gate flow', {
-      state: 'saved initial context',
-      nextSteps: 'run diff;;prepare handoff'
-    });
+    const saveResult = await runSave(
+      repoPath,
+      'Implement release gate flow',
+      {
+        state: 'saved initial context',
+        nextSteps: 'run diff;;prepare handoff',
+      },
+      noPrompt,
+    );
     expect(saveResult.ok).toBe(true);
 
     const resumeResult = await runResume(repoPath, { stdout: true });
@@ -81,7 +89,11 @@ describe('E9-T2 end-to-end branch continuity flow', () => {
     expect(logResult.ok).toBe(true);
     expect(logResult.entries.length).toBeGreaterThanOrEqual(1);
 
-    const handoffResult = await runHandoff(repoPath, 'teammate', 'Continue with release checklist and signoff');
+    const handoffResult = await runHandoff(
+      repoPath,
+      'teammate',
+      'Continue with release checklist and signoff',
+    );
     expect(handoffResult.ok).toBe(true);
 
     const postHandoffLog = await runLog(repoPath, { count: '5' });

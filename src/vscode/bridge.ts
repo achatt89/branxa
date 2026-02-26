@@ -18,7 +18,13 @@ export interface OutputChannelLike {
   appendLine: (value: string) => void;
 }
 
-export const VS_CODE_COMMANDS = ['branxa.save', 'branxa.resume', 'branxa.log', 'branxa.diff'] as const;
+export const VS_CODE_COMMANDS = [
+  'branxa.init',
+  'branxa.save',
+  'branxa.resume',
+  'branxa.log',
+  'branxa.diff',
+] as const;
 
 export function buildNpxArgs(command: string, args: string[]): string[] {
   return ['branxa', command, ...args];
@@ -28,12 +34,12 @@ export async function runBranxaCli(
   executor: CommandExecutor,
   workspacePath: string,
   command: string,
-  args: string[]
+  args: string[],
 ): Promise<CommandExecutionResult> {
   return executor({
     cwd: workspacePath,
     command: 'npx',
-    args: buildNpxArgs(command, args)
+    args: buildNpxArgs(command, args),
   });
 }
 
@@ -41,8 +47,8 @@ export async function runExtensionCommand(
   executor: CommandExecutor,
   outputChannel: OutputChannelLike,
   workspacePath: string,
-  command: 'save' | 'resume' | 'log' | 'diff',
-  args: string[] = []
+  command: 'init' | 'save' | 'resume' | 'log' | 'diff',
+  args: string[] = [],
 ): Promise<CommandExecutionResult> {
   const result = await runBranxaCli(executor, workspacePath, command, args);
 
@@ -60,7 +66,7 @@ export async function runExtensionCommand(
 export async function tryStartupAutoResume(
   executor: CommandExecutor,
   outputChannel: OutputChannelLike,
-  workspacePath: string
+  workspacePath: string,
 ): Promise<CommandExecutionResult> {
   return runExtensionCommand(executor, outputChannel, workspacePath, 'resume', ['--stdout']);
 }

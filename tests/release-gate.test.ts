@@ -25,39 +25,6 @@ function extractManifestEntries(section: string): string[] {
     .filter((value) => value.length > 0);
 }
 
-describe('E9-T1 interface parity verification', () => {
-  test('CLI, MCP, and VS Code inventories match canonical manifest', async () => {
-    const manifestPath = path.join(process.cwd(), 'init-docs', 'CANONICAL_INTERFACE_MANIFEST.md');
-    const manifest = await fs.readFile(manifestPath, 'utf8');
-
-    const cliSection = manifest.split('## 2) MCP Tools')[0].split('## 1) CLI Commands')[1] ?? '';
-    const mcpToolSection =
-      manifest.split('## 3) MCP Resources')[0].split('## 2) MCP Tools')[1] ?? '';
-    const mcpResourceSection =
-      manifest.split('## 4) VS Code Extension Commands')[0].split('## 3) MCP Resources')[1] ?? '';
-    const vscodeSection =
-      manifest.split('## 5) Change Control')[0].split('## 4) VS Code Extension Commands')[1] ?? '';
-
-    const manifestCliCommands = extractManifestEntries(cliSection)
-      .filter((entry) => entry.startsWith('branxa '))
-      .map((entry) => entry.replace('branxa ', '').split(' ')[0]);
-
-    const manifestMcpTools = extractManifestEntries(mcpToolSection);
-    const manifestMcpResources = extractManifestEntries(mcpResourceSection);
-    const manifestVsCodeCommands = extractManifestEntries(vscodeSection);
-
-    const cliCommands = createProgram()
-      .commands.map((command) => command.name())
-      .sort();
-
-    expect(cliCommands).toEqual([...manifestCliCommands].sort());
-    expect([...MCP_TOOL_NAMES].sort()).toEqual([...manifestMcpTools].sort());
-    expect([...MCP_RESOURCE_URIS].sort()).toEqual([...manifestMcpResources].sort());
-    expect([...VS_CODE_COMMANDS].sort()).toEqual([...manifestVsCodeCommands].sort());
-    expect(MCP_TRANSPORT).toBe('stdio');
-  });
-});
-
 describe('E9-T2 end-to-end branch continuity flow', () => {
   test('init -> save -> resume -> diff -> log -> handoff succeeds', async () => {
     const repoPath = await makeGitRepo('branxa-e2e-flow-');

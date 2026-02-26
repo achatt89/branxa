@@ -1,6 +1,6 @@
 {
   "name": "@thelogicatelier/branxa",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Branxa Persistent Context System",
   "type": "commonjs",
   "bin": {

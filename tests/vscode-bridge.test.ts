@@ -43,7 +43,7 @@ describe('E7-T1 command bridge behavior', () => {
     expect(executor).toHaveBeenCalledWith({
       cwd: repoPath,
       command: 'npx',
-      args: ['branxa', 'resume', '--stdout'],
+      args: ['@thelogicatelier/branxa', 'resume', '--stdout'],
     });
     expect(output.lines).toEqual(['resume output']);
     expect(VS_CODE_COMMANDS).toEqual([
@@ -90,7 +90,7 @@ describe('E7-T2 startup and status behavior', () => {
     expect(executor).toHaveBeenCalledWith({
       cwd: repoPath,
       command: 'npx',
-      args: ['branxa', 'resume', '--stdout'],
+      args: ['@thelogicatelier/branxa', 'resume', '--stdout'],
     });
     expect(output.lines).toContain('startup resume output');
   });

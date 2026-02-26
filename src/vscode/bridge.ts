@@ -27,7 +27,7 @@ export const VS_CODE_COMMANDS = [
 ] as const;
 
 export function buildNpxArgs(command: string, args: string[]): string[] {
-  return ['branxa', command, ...args];
+  return ['@thelogicatelier/branxa', command, ...args];
 }
 
 export async function runBranxaCli(
